@@ -4,7 +4,7 @@ jspm_packages/
 
 # Environment variables
 .github_token
-.openai_key
+.anthropic_key
 
 # Build outputs
 dist/

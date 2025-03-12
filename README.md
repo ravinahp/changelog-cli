@@ -1,50 +1,44 @@
-# InstaLog: Changelog Generator CLI
+# Changelog CLI
 
-A command-line tool that generates intelligent changelogs from your GitHub repository.
-
-![InstaLog CLI Banner](https://i.imgur.com/placeholder-image.png)
+A powerful command-line tool for generating intelligent, AI-enhanced changelogs from your GitHub repositories.
 
 ## Features
 
-- 🤖 AI-powered changelog generation with smart commit grouping
-  - **NEW**: Claude AI integration for enhanced summaries and readability
-- 📅 Flexible date range selection (24h, 7d, 14d, 30d, or custom)
-- 🎯 Multiple changelog formats:
-  - Internal (technical details for developers)
-  - External (user-facing changes)
-- 🔍 Auto-detection of current repository
-- ⚡ Real-time progress indicator
-- ✏️ Edit changelogs before publishing
-  - System text editor support
-  - Web-based editor with Markdown preview
-- 📤 Multiple publishing options:
-  - Save to file
-  - Create GitHub release
-  - Copy to clipboard
-
-## Prerequisites
-
-Before using this tool, you'll need:
-
-- Node.js installed (v12 or newer)
-- GitHub Personal Access Token ([Create one here](https://github.com/settings/tokens))
-- Git installed (for repository auto-detection)
-- (Optional) Anthropic API Key for AI-enhanced changelogs ([Get one here](https://console.anthropic.com/))
+- 🤖 **AI-powered summaries** - Uses Claude AI to generate readable, well-organized changelogs
+- 📅 **Flexible date ranges** - Generate changelogs for the last 24h, 7d, 14d, 30d, or custom period
+- 🎯 **Multiple formats**:
+  - **Internal** - Detailed changelogs with commit hashes and author info for developers
+  - **External** - User-friendly changelogs focusing on features and fixes
+- 🔍 **Smart repository detection** - Automatically detects your current Git repository
+- 📊 **Commit classification** - Intelligently categorizes commits (features, fixes, docs, etc.)
+- 📝 **Interactive editing** - Edit your changelog before publishing via:
+  - System text editor
+  - Beautiful web-based editor with Markdown preview
+- 📤 **Multiple publishing options**:
+  - Create GitHub releases
+  - Copy to clipboard for easy sharing
 
 ## Installation
 
-### Install from npm (Coming Soon)
+### Prerequisites
+
+- Node.js v12 or newer
+- Git installed (for repository auto-detection)
+- GitHub Personal Access Token ([Create one here](https://github.com/settings/tokens))
+- (Optional) Anthropic API Key for AI-enhanced changelogs ([Get one here](https://console.anthropic.com/))
+
+### From npm (Coming Soon)
 
 ```bash
-npm install -g instalog
+npm install -g changelog-cli
 ```
 
-### Install from source
+### From source
 
-1. Clone the repository
+1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/instalog.git
-cd instalog
+git clone https://github.com/ravinahp/changelog-cli.git
+cd changelog-cli
 ```
 
 2. Install dependencies:
@@ -52,78 +46,63 @@ cd instalog
 npm install
 ```
 
-3. Create a symbolic link to make it executable globally (optional):
+3. Create a symbolic link to make it globally available (optional):
 ```bash
 npm link
 ```
 
-### Configuration
+## Configuration
 
-There are two ways to configure InstaLog:
+You can configure Changelog CLI in multiple ways (3 options)
 
-#### Option 1: Environment Variables
-Create a `.env` file in the root directory with your Anthropic API key:
+### Environment Variables
 
 ```
+GITHUB_TOKEN=your_github_token
 ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 
-#### Option 2: Interactive Setup
-Simply run the tool, and you'll be prompted to enter your:
-- GitHub Personal Access Token (if not found)
-- Anthropic API Key (if not found and you want to use AI enhancement)
+### Configuration Files
 
-You can choose to save these keys for future use.
+- GitHub Token: Store in `.github_token` file in your project directory
+- Anthropic API Key: Store in `.anthropic_key` file in your project or home directory
+
+### Interactive Setup (reccomended option)
+
+If tokens are not found, the CLI will prompt you to enter them and offers to save them for future use.
 
 ## Usage
 
-Run the CLI with:
+Run the tool with:
 
 ```bash
-instalog
-# or
-il
-# or
-cl
+npm run il
 ```
 
-If you didn't install globally, you can run:
 
-```bash
-npm run cl
-```
+### Interactive Workflow
 
-Follow the interactive prompts to:
-
-1. Enter or confirm your GitHub repository URL
-2. Select the timeframe for your changelog
-3. Choose the changelog format (Internal or External)
-4. Enable or disable AI enhancement (if Anthropic API key is configured)
-5. Edit the changelog (if desired)
-6. Publish the changelog
+1. **Select repository** - Choose from detected, recent, or enter a custom GitHub repo
+2. **Choose time period** - Select the timeframe for your changelog
+3. **Select format** - Internal (developer-focused) or External (user-facing)
+4. **Enable AI enhancement** - Use Claude AI to improve your changelog (if configured)
+5. **Review and edit** - Edit your changelog in text or web editor
+6. **Publish** - Create GitHub release or copy to clipboard
 
 ## AI-Enhanced Changelogs
 
-When the Anthropic API key is provided, InstaLog can use Claude AI to:
+When enabled with an Anthropic API key, the AI enhancement:
 
-- Better categorize and group similar changes
-- Summarize complex changes in a more readable format
-- Prioritize important changes and filter out noise
-- Generate more coherent and professional-looking changelogs
-- Adapt the language and detail level based on the target audience (developers vs. users)
+- Organizes changes into logical groups
+- Improves clarity and readability
+- Highlights important changes
+- Filters out noise and trivial commits
+- Adapts tone based on target audience (technical vs. non-technical)
 
-## Changelog Formats
+## Example Outputs
 
-### Internal Format
+### Internal Format (Developer-Focused)
 
-Designed for developers, the internal format includes:
-
-- Commit hashes
-- Author information
-- Timestamps
-- Categorized by commit type (feat, fix, docs, etc.)
-
-Example:
 ```markdown
 # Changelog: my-project
 
@@ -139,16 +118,8 @@ Example:
 - **ghi9012** Fix login redirect issue (Jane Doe, 2023-03-07)
 ```
 
-### External Format
+### External Format (User-Facing)
 
-Designed for users, the external format:
-
-- Omits technical details
-- Focuses on new features, bug fixes, and breaking changes
-- Uses friendly language
-- Removes commit hashes and author information
-
-Example:
 ```markdown
 # my-project - Changelog
 
@@ -164,18 +135,10 @@ Example:
 - Fix login redirect issue
 ```
 
-## Publishing Options
-
-After generating your changelog, you can:
-
-1. **Save to File**: Save the changelog to a local file (e.g., CHANGELOG.md)
-2. **Create GitHub Release**: Publish the changelog as a GitHub release with a tag
-3. **Copy to Clipboard**: Copy the changelog to your clipboard for pasting elsewhere
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
