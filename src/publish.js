@@ -11,46 +11,9 @@ const axios = require('axios');
  * @returns {Promise<void>}
  */
 const publishChangelog = async (changelog) => {
-  const answers = await inquirer.prompt([
-    {
-      type: 'checkbox',
-      name: 'destinations',
-      message: 'Where would you like to publish the changelog?',
-      choices: [
-        { name: 'Create GitHub release', value: 'github' },
-        { name: 'Copy to clipboard', value: 'clipboard' }
-      ],
-      validate: (input) => {
-        if (input.length === 0) {
-          return 'Please select at least one option';
-        }
-        return true;
-      }
-    }
-  ]);
-
-  const { destinations } = answers;
-
   try {
-    // Make sure destinations is an array (even when empty)
-    const destinationsArray = Array.isArray(destinations) ? destinations : [];
-    
-    // Default to clipboard if nothing selected (should not happen due to validation)
-    if (destinationsArray.length === 0) {
-      await copyToClipboard(changelog);
-    } else {
-      for (const destination of destinationsArray) {
-        switch (destination) {
-          case 'github':
-            await publishToGitHub(changelog);
-            break;
-          case 'clipboard':
-            await copyToClipboard(changelog);
-            break;
-        }
-      }
-    }
-
+    // Automatically publish to local server without asking for destination
+    await publishToLocalServer(changelog);
     console.log(chalk.green('\n✅ Changelog published successfully!'));
   } catch (error) {
     console.error(chalk.red('Error publishing changelog:'), error.message);
@@ -224,6 +187,37 @@ const extractRepoInfo = (url) => {
   }
   
   return [match[1], match[2].replace('.git', '')];
+};
+
+/**
+ * Publishes the changelog to a local server
+ * @param {string} changelog - The changelog content to publish
+ * @returns {Promise<void>}
+ */
+const publishToLocalServer = async (changelog) => {
+  console.log(chalk.blue('Publishing to local server...'));
+  
+  try {
+    // Generate a title based on the date
+    const title = `Changelog ${new Date().toISOString().split('T')[0]}`;
+    
+    // Create payload
+    const payload = {
+      title,
+      content: changelog,
+      date: new Date().toISOString().split('T')[0]
+    };
+    
+    // Send to local server
+    const response = await axios.post('http://localhost:3000/api/changelogs', payload);
+    
+    if (response.status === 201) {
+      console.log(chalk.green('Changelog published successfully!'));
+      console.log(chalk.blue('You can view it at: ') + chalk.cyan('http://localhost:3000'));
+    }
+  } catch (error) {
+    throw new Error(`Failed to publish to local server: ${error.message}`);
+  }
 };
 
 module.exports = { publishChangelog };

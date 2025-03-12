@@ -346,11 +346,10 @@ const run = async () => {
       name: 'editorType',
       message: 'How would you like to edit the changelog?',
       choices: [
-        { name: 'Use system text editor', value: 'text' },
         { name: 'Use web-based editor', value: 'web' },
-        { name: 'No editing needed', value: 'none' }
+        { name: 'No editing needed (proceed directly to publishing)', value: 'none' }
       ],
-      default: 'text',
+      default: 'web',
     }
   ]);
 
@@ -402,22 +401,45 @@ const run = async () => {
       if (editedChangelog !== changelog) {
         console.log(chalk.green('✅ Changelog updated successfully!'));
       }
-    }
+      
+      // If using web editor, we don't need to ask about publishing since it's already done
+      if (useWebEditor) {
+        console.log(chalk.blue('Note: When using the web editor, your changelog is automatically published to http://localhost:3000 when you save.'));
+      } else {
+        // Only ask about publishing if using text editor
+        const publishResponse = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'publish',
+            message: 'Do you want to publish the changelog now?',
+            default: true,
+          },
+        ]);
 
-    // Prompt for publishing
-    const publishResponse = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'publish',
-        message: 'Do you want to publish the changelog now?',
-        default: true,
-      },
-    ]);
-
-    if (publishResponse.publish) {
-      await publishChangelog(editedChangelog);
+        if (publishResponse.publish) {
+          await publishChangelog(editedChangelog);
+        } else {
+          console.log(chalk.yellow('Changelog not published.'));
+        }
+      }
     } else {
-      console.log(chalk.yellow('Changelog not published.'));
+      // No editor was used, ask about publishing
+      console.log(chalk.blue('\n📋 Proceeding with the unchanged changelog...'));
+      
+      const publishResponse = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'publish',
+          message: 'Do you want to publish the changelog now?',
+          default: true,
+        },
+      ]);
+
+      if (publishResponse.publish) {
+        await publishChangelog(editedChangelog);
+      } else {
+        console.log(chalk.yellow('Changelog not published.'));
+      }
     }
     
     // Save changelog history to database

@@ -7,6 +7,7 @@ const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
 const chalk = require('chalk');
+const axios = require('axios');
 
 /**
  * Opens the changelog in the user's default text editor or a temporary web interface
@@ -237,6 +238,7 @@ const openWebEditor = (changelog, options = {}) => {
             border-bottom: 1px solid #f0f0f0;
             padding-bottom: 0.8rem;
             margin-bottom: 1.2rem;
+            text-align: left;
           }
           
           .preview-title {
@@ -244,6 +246,7 @@ const openWebEditor = (changelog, options = {}) => {
             font-weight: 500;
             margin-bottom: 0.3rem;
             color: #4a4e69;
+            text-align: left;
           }
           
           .preview-subtitle {
@@ -251,6 +254,14 @@ const openWebEditor = (changelog, options = {}) => {
             color: #8a8aa3;
             margin-top: 0.3rem;
             font-weight: 400;
+            text-align: left;
+          }
+          
+          #preview-date {
+            font-size: 0.9rem;
+            color: #8a8aa3;
+            margin-top: 0.2rem;
+            text-align: left;
           }
           
           .preview-content {
@@ -260,11 +271,13 @@ const openWebEditor = (changelog, options = {}) => {
             box-shadow: 0 5px 15px rgba(0,0,0,0.02), 0 1px 3px rgba(0,0,0,0.02);
             border: 1px solid #f5f5f7;
             position: relative;
+            text-align: left;
           }
 
           .markdown-content {
             padding-top: 0.3rem;
             font-size: 0.9rem;
+            text-align: left;
           }
           
           .preview-content h1 {
@@ -275,6 +288,7 @@ const openWebEditor = (changelog, options = {}) => {
             font-weight: 500;
             border-bottom: 1px solid #f0f0f0;
             padding-bottom: 0.4rem;
+            text-align: left;
           }
           
           .preview-content h2 {
@@ -283,6 +297,7 @@ const openWebEditor = (changelog, options = {}) => {
             margin-bottom: 0.6rem;
             color: #4a4e69;
             font-weight: 500;
+            text-align: left;
           }
           
           .preview-content h3 {
@@ -291,16 +306,19 @@ const openWebEditor = (changelog, options = {}) => {
             margin-bottom: 0.5rem;
             color: #4a4e69;
             font-weight: 500;
+            text-align: left;
           }
           
           .preview-content ul, .preview-content ol {
             padding-left: 1.5rem;
             margin: 0.6rem 0;
             font-size: 0.9rem;
+            text-align: left;
           }
 
           .preview-content li {
             margin-bottom: 0.4rem;
+            text-align: left;
           }
           
           .preview-content p {
@@ -308,6 +326,7 @@ const openWebEditor = (changelog, options = {}) => {
             line-height: 1.5;
             color: #4a4e69;
             font-size: 0.9rem;
+            text-align: left;
           }
 
           .preview-content strong {
@@ -426,59 +445,84 @@ const openWebEditor = (changelog, options = {}) => {
             border-radius: 4px;
             background-color: var(--surface-color);
           }
+          
+          /* Title container and input fields */
+          .title-container {
+            margin-bottom: 1.5rem;
+          }
+          
+          .title-container .input-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+          }
+          
+          .title-container label {
+            width: 100px;
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+            padding-right: 10px;
+          }
+          
+          .title-container input {
+            flex: 1;
+            padding: 0.75rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--surface-color);
+          }
+          
+          #changelog-title {
+            font-weight: 500;
+            font-size: 16px;
+          }
+          
+          #changelog-date {
+            font-size: 14px;
+            color: #666;
+          }
         </style>
       </head>
       <body>
         <div class="header">
-          <h1>Changelog Editor</h1>
+          <h1>${repoName} Changelog</h1>
         </div>
         
         <div class="editor-wrapper">
           <div class="split-container">
             <div class="editor-side">
-              <div class="editor-container">
-                <div class="instructions">
-                  <p>Edit your markdown-formatted changelog below:</p>
+              <div class="title-container">
+                <div class="input-row">
+                  <label for="changelog-title">Title:</label>
+                  <input type="text" id="changelog-title" placeholder="Title" value="${title || 'Changelog'}" />
                 </div>
-                <div class="input-group">
-                  <label for="changelog-title">Changelog Title</label>
-                  <input type="text" id="changelog-title" placeholder="Enter title (e.g. v1.0.0 Release)" value="${title}">
+                <div class="input-row">
+                  <label for="changelog-date">Date Range:</label>
+                  <input type="text" id="changelog-date" placeholder="Date/Version" value="${dateRange}" />
                 </div>
-                <div class="input-group">
-                  <label for="changelog-date">Date Range</label>
-                  <input type="text" id="changelog-date" placeholder="Enter date range (e.g. 2024-01-01 to 2024-01-31)" value="${dateRange}">
-                </div>
-                <textarea id="markdown-editor" oninput="updatePreview()">${escapedChangelog}</textarea>
               </div>
+              <textarea id="markdown-editor" placeholder="Type your changelog here in Markdown...">${escapedChangelog}</textarea>
             </div>
-            
             <div class="preview-side">
-              <div class="preview-container">
-                <div class="instructions">
-                  <p>Preview:</p>
-                </div>
-                <div class="preview-header">
-                  <div class="preview-title">
-                    <span id="preview-title">${title}</span>
-                    <span class="preview-dot"> · </span>
-                    <span id="preview-repo" style="font-size: 0.8rem; color: #8a8aa3;">${repoName}</span>
-                  </div>
-                  <div class="preview-subtitle" id="preview-date">${dateRange}</div>
-                </div>
-                <div class="preview-content" id="preview-content">
-                  <!-- Preview content will be rendered here directly -->
-                </div>
+              <div class="preview-header">
+                <h2 id="preview-title">${title || 'Changelog'}</h2>
+                <div id="preview-date">${dateRange}</div>
+              </div>
+              <div id="preview-content">
+                <p>Loading preview...</p>
               </div>
             </div>
           </div>
         </div>
         
         <div class="footer">
-          <button type="button" onclick="saveChangelog()">Publish Changelog</button>
+          <button onclick="saveChangelog()" class="primary">Publish Changelog</button>
         </div>
         
         <script>
-          // Use marked.js to render markdown
           document.addEventListener('DOMContentLoaded', function() {
             // Check if marked is loaded
             if (typeof marked === 'undefined') {
@@ -546,20 +590,29 @@ const openWebEditor = (changelog, options = {}) => {
           }
           
           function saveChangelog() {
-            // Get the markdown content
+            // Get the markdown content and title
             const content = document.getElementById('markdown-editor').value;
+            const title = document.getElementById('changelog-title').value || 'Changelog';
             
             fetch('/save', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ content })
+              body: JSON.stringify({ 
+                content,
+                title 
+              })
             })
             .then(response => response.json())
             .then(data => {
               if (data.success) {
-                window.close();
+                if (data.publishUrl) {
+                  // Open the published changelog URL
+                  window.location.href = data.publishUrl;
+                } else {
+                  window.close();
+                }
               }
             });
           }
@@ -572,16 +625,42 @@ const openWebEditor = (changelog, options = {}) => {
     });
     
     // Handle saving the edited changelog
-    app.post('/save', (req, res) => {
+    app.post('/save', async (req, res) => {
       editedChangelog = req.body.content;
-      res.json({ success: true });
+      const title = req.body.title || 'Changelog';
+      let publishUrl = null;
+      
+      // Automatically publish to localhost:3000
+      try {
+        // Create payload
+        const payload = {
+          title,
+          content: editedChangelog,
+          date: new Date().toISOString().split('T')[0]
+        };
+        
+        // Send to local server
+        const response = await axios.post('http://localhost:3000/api/changelogs', payload);
+        
+        if (response.status === 201) {
+          console.log(chalk.green('Changelog published successfully to localhost:3000!'));
+          publishUrl = 'http://localhost:3000';
+        }
+      } catch (error) {
+        console.error(chalk.red(`Error publishing to local server: ${error.message}`));
+      }
+      
+      res.json({ 
+        success: true,
+        publishUrl
+      });
       
       // Close the server after a short delay to allow the browser to receive the response
       setTimeout(() => {
         server.close(() => {
           resolve(editedChangelog);
         });
-      }, 100);
+      }, 500);
     });
     
     // Start the server
