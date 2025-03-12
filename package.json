@@ -1,0 +1,48 @@
+{
+  "name": "instalog",
+  "version": "1.0.0",
+  "description": "AI-powered changelog generator for GitHub repositories",
+  "main": "index.js",
+  "bin": {
+    "instalog": "./index.js",
+    "il": "./index.js",
+    "cl": "./index.js"
+  },
+  "scripts": {
+    "start": "node --no-deprecation index.js",
+    "il": "node --no-deprecation index.js",
+    "cl": "node --no-deprecation index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "changelog",
+    "github",
+    "generator",
+    "release",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "axios": "^1.4.0",
+    "body-parser": "^1.20.2",
+    "chalk": "^4.1.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "figlet": "^1.6.0",
+    "inquirer": "^8.2.5",
+    "open": "^8.4.2",
+    "ora": "^5.4.1"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/instalog.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/instalog/issues"
+  }
+}
