@@ -38,7 +38,7 @@ npm run cli
 To view and share your published changelogs, start the server:
 
 ```bash
-node server.js
+npm run server
 ```
 
 Then visit `http://localhost:3000` in your browser to view your published changelogs.
